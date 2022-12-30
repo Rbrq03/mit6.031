@@ -3,6 +3,9 @@
  */
 package twitter;
 
+import java.sql.Time;
+import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,7 +27,21 @@ public class Extract {
      *         every tweet in the list.
      */
     public static Timespan getTimespan(List<Tweet> tweets) {
-        throw new RuntimeException("not implemented");
+
+        assert tweets.size() > 0 : "There is no tweets here";
+
+        Instant startInstant = tweets.get(0).getTimestamp();
+        Instant endInstant = tweets.get(0).getTimestamp();
+        for(Tweet tweet:tweets)
+        {
+            if(tweet.getTimestamp().isBefore(startInstant))
+                startInstant = tweet.getTimestamp();
+            else if(tweet.getTimestamp().isAfter(endInstant))
+                endInstant = tweet.getTimestamp();
+        }
+
+        Timespan resultTimeSpan = new Timespan(startInstant, endInstant);
+        return resultTimeSpan;
     }
 
     /**
@@ -43,7 +60,18 @@ public class Extract {
      *         include a username at most once.
      */
     public static Set<String> getMentionedUsers(List<Tweet> tweets) {
-        throw new RuntimeException("not implemented");
+        Set<String> mentionedUserSet = new HashSet<String>();
+
+        for(Tweet tweet:tweets)
+        {
+            for(String word: tweet.getText().split(" "))
+            {
+                if(word.charAt(0)=='@')
+                    mentionedUserSet.add(word.substring(1).toLowerCase());
+            }
+        }
+        
+        return mentionedUserSet;  
     }
 
 }
