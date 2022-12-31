@@ -5,7 +5,9 @@ package twitter;
 
 import static org.junit.Assert.*;
 
+import java.io.FileWriter;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,8 +17,11 @@ public class FilterTest {
 
     /*
      * TODO: your testing strategies for these methods should go here.
-     * See the ic03-testing exercise for examples of what a testing strategy comment looks like.
-     * Make sure you have partitions.
+     *  testing strategy for writtenBy
+     *      partition on the size of return Tweet List
+     *              size = 0
+     *              size = 1
+     *              size >= 2
      */
     
     private static final Instant d1 = Instant.parse("2016-02-17T10:00:00Z");
@@ -24,7 +29,32 @@ public class FilterTest {
     
     private static final Tweet tweet1 = new Tweet(1, "alyssa", "is it reasonable to talk about rivest so much?", d1);
     private static final Tweet tweet2 = new Tweet(2, "bbitdiddle", "rivest talk in 30 minutes #hype", d2);
-    
+    private static final Tweet tweet3 = new Tweet(3, "bbitdiddle", "aksfjlasf", d2);
+
+    @Test
+    public void testWrittenBy(){
+        List<Tweet> tweets = new ArrayList<>();
+        List<Tweet> writtenBybb = new ArrayList<>();
+        tweets.add(tweet1);
+
+        // n == 0
+        writtenBybb = Filter.writtenBy(tweets, "bbitdiddle");
+        assertTrue(writtenBybb.isEmpty());
+
+        // n == 1
+        tweets.add(tweet2);
+        writtenBybb = Filter.writtenBy(tweets, "bbitdiddle");
+        assertEquals(1, writtenBybb.size());
+        assertEquals("bbitdiddle", writtenBybb.get(0).getAuthor());
+
+        // n == 2
+        tweets.add(tweet3);
+        writtenBybb = Filter.writtenBy(tweets, "bbitdiddle");
+        assertEquals(2, writtenBybb.size());
+        assertEquals("bbitdiddle", writtenBybb.get(0).getAuthor());
+        assertEquals("bbitdiddle", writtenBybb.get(1).getAuthor());
+    }
+
     @Test(expected=AssertionError.class)
     public void testAssertionsEnabled() {
         assert false; // make sure assertions are enabled with VM argument: -ea

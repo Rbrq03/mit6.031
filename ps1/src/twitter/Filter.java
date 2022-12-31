@@ -3,6 +3,7 @@
  */
 package twitter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,7 +28,15 @@ public class Filter {
      *         in the same order as in the input list.
      */
     public static List<Tweet> writtenBy(List<Tweet> tweets, String username) {
-        throw new RuntimeException("not implemented");
+        List<Tweet> writtenByTweetsList = new ArrayList<Tweet>();
+
+        for(Tweet tweet:tweets)
+        {
+            if(tweet.getAuthor().equals(username))
+                writtenByTweetsList.add(tweet);
+        }
+
+        return writtenByTweetsList;
     }
 
     /**
@@ -41,7 +50,16 @@ public class Filter {
      *         in the same order as in the input list.
      */
     public static List<Tweet> inTimespan(List<Tweet> tweets, Timespan timespan) {
-        throw new RuntimeException("not implemented");
+        List<Tweet> inTimespanList = new ArrayList<Tweet>();
+
+        for(Tweet tweet:tweets)
+        {
+            if(tweet.getTimestamp().isAfter(timespan.getStart()) &&
+                tweet.getTimestamp().isBefore(timespan.getEnd()))
+                inTimespanList.add(tweet);
+        }
+
+        return inTimespanList;
     }
 
     /**
@@ -60,7 +78,24 @@ public class Filter {
      *         same order as in the input list.
      */
     public static List<Tweet> containing(List<Tweet> tweets, List<String> words) {
-        throw new RuntimeException("not implemented");
+        List<Tweet> containingList =  new ArrayList<Tweet>();
+
+        boolean uncontaining = false;
+        for(Tweet tweet:tweets)
+        {
+            uncontaining = false;
+            for(String tweetWord:tweet.getText().split(" "))
+                for(String word:words)
+                {
+                    if(!uncontaining && tweetWord.equals(word))
+                    {
+                        uncontaining = true;
+                        containingList.add(tweet);
+                    }
+                }
+        }
+
+        return containingList;
     }
 
 }

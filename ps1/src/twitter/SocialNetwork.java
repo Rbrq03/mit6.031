@@ -3,9 +3,22 @@
  */
 package twitter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import static java.util.Map.Entry.comparingByValue;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * SocialNetwork provides methods that operate on a social network.
@@ -41,7 +54,17 @@ public class SocialNetwork {
      *         either authors or @-mentions in the list of tweets.
      */
     public static Map<String, Set<String>> guessFollowsGraph(List<Tweet> tweets) {
-        throw new RuntimeException("not implemented");
+        Map<String, Set<String>> socialMap = new HashMap<String, Set<String>>();
+
+        for(Tweet tweet:tweets)
+        {
+            List<Tweet> singleTweet = new ArrayList<Tweet>(Arrays.asList(tweet));
+            Set<String> followSet = Extract.getMentionedUsers(singleTweet);
+            if(followSet.size() != 0)
+                socialMap.put(tweet.getAuthor().toLowerCase(), followSet);
+        }
+
+        return socialMap;
     }
 
     /**
@@ -54,7 +77,25 @@ public class SocialNetwork {
      *         descending order of follower count.
      */
     public static List<String> influencers(Map<String, Set<String>> followsGraph) {
-        throw new RuntimeException("not implemented");
+        Map<String, Integer> influenceMap = new HashMap<String, Integer>();
+
+        for(String authorName:followsGraph.keySet())
+            influenceMap.put(authorName, followsGraph.get(authorName).size());
+        
+        ArrayList<Map.Entry<String, Integer>> list = new ArrayList<>(influenceMap.entrySet());
+        Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+            @Override public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2){
+                return (o1.getValue() > o2.getValue()) ? -1 : 1;
+            }
+        });
+
+        List<String> influenceList = new ArrayList<>();
+
+        for(Map.Entry<String, Integer> followPair:list)
+            influenceList.add(followPair.getKey());
+        
+        return influenceList;
+
     }
 
 }
