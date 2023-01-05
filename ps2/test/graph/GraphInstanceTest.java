@@ -130,5 +130,6 @@ public abstract class GraphInstanceTest {
         assertEquals("check rbrq --> 1", Integer.valueOf("2"), targetMap.get("1"));
         assertEquals("check rbrq --> 2", Integer.valueOf("3"), targetMap.get("2"));
     }
+
     
 }

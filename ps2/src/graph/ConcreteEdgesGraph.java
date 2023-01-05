@@ -18,10 +18,10 @@ import javax.sound.midi.SysexMessage;
  * 
  * <p>PS2 instructions: you MUST use the provided rep.
  */
-public class ConcreteEdgesGraph implements Graph<String> {
+public class ConcreteEdgesGraph<L> implements Graph<L> {
     
-    private final Set<String> vertices = new HashSet<>();
-    private final List<Edge> edges = new ArrayList<>();
+    private final Set<L> vertices = new HashSet<>();
+    private final List<Edge<L>> edges = new ArrayList<>();
     
     // Abstraction function:
     //   AF(vertices, edges) = a graph with vertices & edges
@@ -44,7 +44,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
      */
     public void checkrep() {
 
-        for(Edge edge:edges) {
+        for(Edge<L> edge:edges) {
             assert(vertices.contains(edge.getSource()) && vertices.contains(edge.getTarget()));
         }
 
@@ -55,21 +55,20 @@ public class ConcreteEdgesGraph implements Graph<String> {
 
     }
     
-    @Override public boolean add(String vertex) {
+    @Override public boolean add(L vertex) {
         if (vertices.contains(vertex))
             return false;
         
         vertices.add(vertex);
-        System.out.println(vertices().add(vertex));
         checkrep();
         return true;
     }
     
-    @Override public int set(String source, String target, int weight) {
+    @Override public int set(L source, L target, int weight) {
         int originalWeight = 0;
-        Edge newEdge = new Edge(source, target, weight);
+        Edge<L> newEdge = new Edge<L>(source, target, weight);
 
-        for(Edge edge:edges)
+        for(Edge<L> edge:edges)
         {
             if(edge.equals(newEdge))
             {
@@ -86,16 +85,16 @@ public class ConcreteEdgesGraph implements Graph<String> {
 
     }
     
-    @Override public boolean remove(String vertex) {
+    @Override public boolean remove(L vertex) {
         if(!vertices.contains(vertex))
             return false;
         
         vertices.remove(vertex);
 
-        Iterator<Edge> i = edges.iterator();
+        Iterator<Edge<L>> i = edges.iterator();
 
         while(i.hasNext()) {
-            Edge ie = i.next();
+            Edge<L> ie = i.next();
             if(ie.getSource().equals(vertex) || ie.getTarget().equals(vertex))
                 i.remove();
         }
@@ -103,14 +102,14 @@ public class ConcreteEdgesGraph implements Graph<String> {
         return true;
     }
     
-    @Override public Set<String> vertices() {
-        return new HashSet<String>(vertices);
+    @Override public Set<L> vertices() {
+        return new HashSet<L>(vertices);
     }
     
-    @Override public Map<String, Integer> sources(String target) {
-        Map<String, Integer> sourcesMap = new HashMap<>();
+    @Override public Map<L, Integer> sources(L target) {
+        Map<L, Integer> sourcesMap = new HashMap<>();
 
-        for(Edge edge:edges)
+        for(Edge<L> edge:edges)
         {
             if(edge.getTarget().equals(target))
                 sourcesMap.put(edge.getSource(), edge.getWeight());
@@ -119,10 +118,10 @@ public class ConcreteEdgesGraph implements Graph<String> {
         return sourcesMap;
     }
     
-    @Override public Map<String, Integer> targets(String source) {
-        Map<String, Integer> targetMap = new HashMap<>();
+    @Override public Map<L, Integer> targets(L source) {
+        Map<L, Integer> targetMap = new HashMap<>();
 
-        for(Edge edge:edges)
+        for(Edge<L> edge:edges)
         {
             if(edge.getSource().equals(source))
                 targetMap.put(edge.getTarget(), edge.getWeight());
@@ -135,14 +134,14 @@ public class ConcreteEdgesGraph implements Graph<String> {
     public String toString() {
         String graphString = new String("Vertex: ");
 
-        for(String vertex:vertices)
+        for(L vertex:vertices)
         {
             graphString = graphString.concat(vertex + ", ");
         }
 
         graphString = graphString.concat("\nEdge:\n");
 
-        for(Edge edge:edges)
+        for(Edge<L> edge:edges)
         graphString = graphString.concat(edge.toString() + "\n");
 
         return graphString;
@@ -158,10 +157,10 @@ public class ConcreteEdgesGraph implements Graph<String> {
  * <p>PS2 instructions: the specification and implementation of this class is
  * up to you.
  */
-class Edge {
+class Edge<L> {
     
-    private String source = null;
-    private String target = null;
+    private L source = null;
+    private L target = null;
     private int weight = 0;
     
     // Abstraction function:
@@ -180,9 +179,9 @@ class Edge {
      * @param target rep the label of target vertex of a edge
      * @param weight rep the weight of a edge
      */
-    public Edge(String source, String target, int weight) {
-        this.source = new String(source);
-        this.target = new String(target);
+    public Edge(L source, L target, int weight) {
+        this.source = source;
+        this.target = target;
         this.weight = weight;
         checkrep();
     }
@@ -205,7 +204,8 @@ class Edge {
      */
     @Override public boolean equals(Object o) {
         assert (o instanceof Edge);
-        Edge e = (Edge) o;
+
+        Edge<L> e = (Edge<L>) o;
         return this.source.equals(e.getSource()) &&
                 this.target.equals(e.getTarget()) &&
                 (this.weight == e.getWeight());
@@ -227,8 +227,8 @@ class Edge {
      * 
      * @return new obj which equals to this.source
      */
-    public String getSource() {
-        return new String(this.source);
+    public L getSource() {
+        return this.source;
     }
 
     /**
@@ -236,8 +236,8 @@ class Edge {
      * 
      * @return new obj which equals to this.target
      */
-    public String getTarget() {
-        return new String(this.target);
+    public L getTarget() {
+        return this.target;
     }
 
     /**
