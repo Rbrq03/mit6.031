@@ -53,76 +53,82 @@ public abstract class GraphInstanceTest {
 
     @Test
     public void testNormalAdd() {
-        assertEquals("nonexistence single vertex add", true, emptyInstance().add("rbrq"));
-        assertEquals("nonexistence single vertex add", true, emptyInstance().add("1"));
-        assertEquals("nonexistence single vertex add", true, emptyInstance().add("2"));
-        assertEquals("successful add", true, emptyInstance().vertices().contains("rbrq"));
-        assertEquals("successful add", 3, emptyInstance().vertices().size());
+        Graph<String> testGraph = emptyInstance();
+        assertEquals("nonexistence single vertex add1", true, testGraph.add("rbrq"));
+        assertEquals("nonexistence single vertex add2", true, testGraph.add("1"));
+        assertEquals("nonexistence single vertex add3", true, testGraph.add("2"));
+        assertEquals("successful add", true, testGraph.vertices().contains("1"));
+        assertEquals("successful add", 3, testGraph.vertices().size());
     }
 
     @Test
     public void testExistenceAdd() {
-        emptyInstance().add("rbrq");
-        assertEquals("return false while add exist vertex", false, emptyInstance().add("rbrq"));
+        Graph<String> testGraph = emptyInstance();
+        testGraph.add("rbrq");
+        assertEquals("return false while add exist vertex", false, testGraph.add("rbrq"));
     }
 
     @Test
     public void testAddEdge() {
-        emptyInstance().add("rbrq");
-        emptyInstance().add("1");
-        assertEquals("nonexisetence edge", 0, emptyInstance().set("rbrq", "1", 1));
+        Graph<String> testGraph = emptyInstance();
+        testGraph.add("rbrq");
+        testGraph.add("1");
+        assertEquals("nonexisetence edge", 0, testGraph.set("rbrq", "1", 1));
     }
     
     @Test
     public void testAddEdge2() {
-        emptyInstance().add("rbrq");
-        emptyInstance().add("1");
-        emptyInstance().set("rbrq", "1", 1);
-        assertEquals("nonexisetence edge", 1, emptyInstance().set("rbrq", "1", 1));
+        Graph<String> testGraph = emptyInstance();
+        testGraph.add("rbrq");
+        testGraph.add("1");
+        testGraph.set("rbrq", "1", 1);
+        assertEquals("nonexisetence edge", 1, testGraph.set("rbrq", "1", 1));
     }
     
     @Test
     public void testRemove() {
-        emptyInstance().add("rbrq");
-        emptyInstance().add("1");
-        emptyInstance().add("2");
-        emptyInstance().set("rbrq", "1", 2);
-        emptyInstance().set("1", "2", 2);
-        emptyInstance().set("rbrq", "2", 2);
-        assertEquals("remove edge", true, emptyInstance().remove("rbrq"));
-        assertEquals("remove vertex", false, emptyInstance().vertices().contains("rbrq"));
-        assertEquals("remove edge", 0, emptyInstance().set("rbrq", "1", 1));
-        assertEquals("remove edge", 0, emptyInstance().set("rbrq", "2", 1));
-        assertEquals("remove nonexistence vertex", false, emptyInstance().remove("rbrq"));
+        Graph<String> testGraph = emptyInstance();
+        testGraph.add("rbrq");
+        testGraph.add("1");
+        testGraph.add("2");
+        testGraph.set("rbrq", "1", 2);
+        testGraph.set("1", "2", 2);
+        testGraph.set("rbrq", "2", 2);
+        assertEquals("remove edge", true, testGraph.remove("rbrq"));
+        assertEquals("remove vertex", false, testGraph.vertices().contains("rbrq"));
+        assertEquals("remove edge", 0, testGraph.set("rbrq", "1", 1));
+        assertEquals("remove edge", 0, testGraph.set("rbrq", "2", 1));
+        assertEquals("remove nonexistence vertex", false, testGraph.remove("rbrq"));
     }
 
     @Test
     public void testSources() {
-        emptyInstance().add("rbrq");
-        emptyInstance().add("1");
-        emptyInstance().add("2");
-        emptyInstance().set("rbrq", "1", 2);
-        emptyInstance().set("1", "2", 2);
-        emptyInstance().set("rbrq", "2", 3);
-        Map<String, Integer> resultMap = emptyInstance().sources("rbrq");
+        Graph<String> testGraph = emptyInstance();
+        testGraph.add("rbrq");
+        testGraph.add("1");
+        testGraph.add("2");
+        testGraph.set("rbrq", "1", 2);
+        testGraph.set("1", "2", 2);
+        testGraph.set("rbrq", "2", 3);
+        Map<String, Integer> resultMap = testGraph.sources("2");
         assertEquals("contianer", 2, resultMap.keySet().size());
-        assertEquals("check rbrq --> 1", Integer.valueOf("2"), resultMap.get("1"));
-        assertEquals("check rbrq --> 2", Integer.valueOf("3"), resultMap.get("2"));
+        assertEquals("check rbrq --> 2", Integer.valueOf("3"), resultMap.get("rbrq"));
+        assertEquals("check 1 --> 2", Integer.valueOf("2"), resultMap.get("1"));
     }
 
     @Test
     public void testTarget() {
-        emptyInstance().add("rbrq");
-        emptyInstance().add("1");
-        emptyInstance().add("2");
-        emptyInstance().set("rbrq", "1", 2);
-        emptyInstance().set("1", "2", 2);
-        emptyInstance().set("rbrq", "2", 3);
-        Map<String, Integer> targetMap = emptyInstance().targets("2");
+        Graph<String> testGraph = emptyInstance();
+        testGraph.add("rbrq");
+        testGraph.add("1");
+        testGraph.add("2");
+        testGraph.set("rbrq", "1", 2);
+        testGraph.set("1", "2", 2);
+        testGraph.set("rbrq", "2", 3);
+        Map<String, Integer> targetMap = testGraph.targets("rbrq");
         assertEquals("contain number", 2, targetMap.keySet().size());
         assertEquals("check rbrq --> 1", Integer.valueOf("2"), targetMap.get("1"));
-        assertEquals("check rbrq --> 2", Integer.valueOf("3"), targetMap.get("rbrq"));
+        assertEquals("check rbrq --> 2", Integer.valueOf("3"), targetMap.get("2"));
     }
-
     
 }
