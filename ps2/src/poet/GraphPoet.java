@@ -3,8 +3,12 @@
  */
 package poet;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import graph.Graph;
 
@@ -55,11 +59,11 @@ public class GraphPoet {
     private final Graph<String> graph = Graph.empty();
     
     // Abstraction function:
-    //   TODO
+    //   AF(graph) = a poem 
     // Representation invariant:
-    //   TODO
+    //   no word in can be "invalid"
     // Safety from rep exposure:
-    //   TODO
+    //   all argument are private & no obersever return a new object
     
     /**
      * Create a new poet with the graph from corpus (as described above).
@@ -68,10 +72,36 @@ public class GraphPoet {
      * @throws IOException if the corpus file cannot be found or read
      */
     public GraphPoet(File corpus) throws IOException {
-        throw new RuntimeException("not implemented");
+        try{
+            BufferedReader corpusIn = new BufferedReader(new FileReader(corpus));
+            String corpusLine;
+
+            while((corpusLine = corpusIn.readLine()) != null) {
+                String[] corpusWords = corpusLine.split(" ");
+                int numWords = corpusLine.split(" ").length;
+
+                graph.add(corpusWords[0]);
+                int originalWeight;
+                
+                for(int i = 1; i < numWords; i++)
+                {
+                    graph.add(corpusWords[i]);
+                    originalWeight = graph.set(corpusWords[i-1], corpusWords[i], 1);
+                    graph.set(corpusWords[i-1], corpusWords[i], originalWeight + 1);
+                }
+            }
+            corpusIn.close();
+        }
+        finally{
+            checkrep();
+        }
     }
     
-    // TODO checkRep
+    public void checkrep() {
+        for(String word:graph.vertices()) {
+            assert(word.equals("invalid"));
+        }
+    }
     
     /**
      * Generate a poem.
@@ -80,9 +110,55 @@ public class GraphPoet {
      * @return poem (as described above)
      */
     public String poem(String input) {
-        throw new RuntimeException("not implemented");
+        String[] poemWords = input.split(" ");
+        String resultPoem = poemWords[0];
+
+        for(int i = 1; i < input.split(" ").length ;i++) {
+            String possibleBridge = bridge(poemWords[i-1], poemWords[i]);
+            if(!possibleBridge.equals("invalid")) {
+                resultPoem = resultPoem.concat(" " + possibleBridge + " "+ poemWords[i]);
+            }
+            else{
+                resultPoem = resultPoem.concat(" " + poemWords[i]);
+            }
+        }
+
+        return resultPoem;
+    }
+
+    /**
+     * return max-weight bridge
+     * 
+     * @param source the source of edge
+     * @param target the target of edged
+     * @return return "invalid" if there is no two-edge-bridge from
+     * source to target else return the max-weight bridge word from source
+     * to target 
+     */
+    private String bridge(String source, String target) {
+        String finalBridge = new String("invalid");
+        int firstEdgeWeight = 0, secondEdgeWeight = 0, maxWeight = 0;
+        Map<String, Integer> firstEdge = new HashMap<>();
+        Map<String, Integer> secondEdge = new HashMap<>();
+
+        firstEdge = graph.targets(source);
+        for(String bridge:firstEdge.keySet()) {
+            firstEdgeWeight = firstEdge.get(bridge);
+            secondEdge = graph.targets(bridge);
+            for(String probe:secondEdge.keySet()) {
+                secondEdgeWeight = secondEdge.get(probe);
+                if(probe.equals(target) && (firstEdgeWeight + secondEdgeWeight >= maxWeight)) {
+                    finalBridge = bridge;
+                    maxWeight = firstEdgeWeight + secondEdgeWeight;
+                }
+            }
+        }
+        return finalBridge;
     }
     
-    // TODO toString()
+    @Override
+    public String toString() {
+        return graph.toString();
+    }
     
 }
