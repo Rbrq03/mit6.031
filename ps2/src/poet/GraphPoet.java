@@ -99,7 +99,7 @@ public class GraphPoet {
     
     public void checkrep() {
         for(String word:graph.vertices()) {
-            assert(word.equals("invalid"));
+            assert(!word.equals("invalid"));
         }
     }
     

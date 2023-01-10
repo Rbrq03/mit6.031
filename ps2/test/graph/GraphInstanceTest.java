@@ -37,7 +37,9 @@ public abstract class GraphInstanceTest {
      * 
      * @return a new empty graph of the particular implementation being tested
      */
-    public abstract Graph<String> emptyInstance();
+    public Graph<String> emptyInstance() {
+        return Graph.empty();
+    };
     
     @Test(expected=AssertionError.class)
     public void testAssertionsEnabled() {
