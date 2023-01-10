@@ -29,10 +29,11 @@ import Configuration;
  * For more information, see reading 18 about parser generators, which explains
  * how to use Antlr and has links to reference information.
  */
-root : sum EOF;
-sum : primitive ('+' primitive)*;
-primitive : NUMBER | '(' sum ')';
-NUMBER : [0-9]+;
+root : operator EOF;
+operator : primitive (('+'|'*') primitive)*;
+primitive : VARIABLE | NUMBER | '(' operator ')';
+NUMBER : [0-9]+('.'[0-9]+)?;
+VARIABLE : ([a-z A-Z])+;
 
 /* Tell Antlr to ignore spaces around tokens. */
 SPACES : [ ]+ -> skip;

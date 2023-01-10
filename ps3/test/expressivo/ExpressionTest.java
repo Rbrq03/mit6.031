@@ -7,6 +7,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+//import java.util.concurrent.TimeUnit;
+
 /**
  * Tests for the Expression abstract data type.
  */
@@ -46,6 +48,15 @@ public class ExpressionTest {
         System.out.println(testMult2);
     }
     
-    // TODO tests for Expression
+    @Test 
+    public void testParse() {
+        Expression testExpr =  Expression.parse("12+x*y+(5*x)");
+        // try{
+        //     Thread.currentThread().sleep(3000);
+        // }
+        // catch(InterruptedException e) { }
+        
+        assertEquals("5.0*x+x*y+12.0", testExpr.toString());
+    }
     
 }

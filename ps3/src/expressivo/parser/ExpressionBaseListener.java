@@ -31,13 +31,13 @@ public class ExpressionBaseListener implements ExpressionListener {
    *
    * <p>The default implementation does nothing.</p>
    */
-  @Override public void enterSum(ExpressionParser.SumContext ctx) { }
+  @Override public void enterOperator(ExpressionParser.OperatorContext ctx) { }
   /**
    * {@inheritDoc}
    *
    * <p>The default implementation does nothing.</p>
    */
-  @Override public void exitSum(ExpressionParser.SumContext ctx) { }
+  @Override public void exitOperator(ExpressionParser.OperatorContext ctx) { }
   /**
    * {@inheritDoc}
    *
