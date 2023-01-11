@@ -24,7 +24,7 @@ public class Commands {
      * @throws IllegalArgumentException if the expression or variable is invalid
      */
     public static String differentiate(String expression, String variable) {
-        throw new RuntimeException("unimplemented");
+        return Expression.parse(expression).Differentiate(new VariableExpression(variable)).toString();
     }
     
     /**
@@ -40,7 +40,13 @@ public class Commands {
      * @throws IllegalArgumentException if the expression is invalid
      */
     public static String simplify(String expression, Map<String,Double> environment) {
-        throw new RuntimeException("unimplemented");
+        Expression expr =  Expression.parse(expression);
+
+        for(String var:environment.keySet()) {
+            expr = expr.Simplify(new VariableExpression(var), environment.get(var));
+        }
+
+        return expr.toString();
     }
     
 }

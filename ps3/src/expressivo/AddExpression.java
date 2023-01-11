@@ -1,7 +1,5 @@
 package expressivo;
 
-import java.util.Objects;
-
 public class AddExpression implements Expression{
 
     private Expression leftExpression;
@@ -23,7 +21,7 @@ public class AddExpression implements Expression{
     
     @Override
     public String toString() {
-        return leftExpression.toString() + "+" + rightExpression.toString();
+        return "(" + leftExpression.toString() + "+" + rightExpression.toString() + ")";
     }
 
     @Override
@@ -38,6 +36,27 @@ public class AddExpression implements Expression{
     @Override
     public int hashCode() {
         return leftExpression.hashCode() + rightExpression.hashCode();
-    }    
+    }
+    
+    @Override
+    public Expression Differentiate(VariableExpression var) {
+        return new AddExpression(leftExpression.Differentiate(var), 
+                                rightExpression.Differentiate(var));
+    }
+
+    @Override
+    public Expression Simplify(VariableExpression var, double value) {
+        Expression lefExpressionSimplified = leftExpression.Simplify(var, value);
+        Expression rightExpressionSimplified = rightExpression.Simplify(var, value);
+        
+        if(lefExpressionSimplified instanceof ConstantExpression && rightExpressionSimplified instanceof ConstantExpression) {
+            return new ConstantExpression(
+                ((ConstantExpression)lefExpressionSimplified).getValue() + ((ConstantExpression)rightExpressionSimplified).getValue()
+            );
+        }
+        else {
+            return new AddExpression(lefExpressionSimplified, rightExpressionSimplified);
+        }
+    }
     
 }

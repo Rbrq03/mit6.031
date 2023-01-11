@@ -38,5 +38,25 @@ public class VariableExpression implements Expression{
         return Objects.hashCode(variable);
     }
 
+    @Override
+    public Expression Differentiate(VariableExpression var) {
+        if (var.equals(this)) {
+            return new ConstantExpression(1.0);
+        }
+        else {
+            return new ConstantExpression(0.0);
+        }
+        
+    }
+
+    @Override
+    public Expression Simplify(VariableExpression var, double value) {
+        if(var.equals(this)) {
+            return new ConstantExpression(value);
+        }
+        else {
+            return new VariableExpression(this.variable);
+        }
+    }
     
 }

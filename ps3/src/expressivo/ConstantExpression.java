@@ -27,4 +27,18 @@ public class ConstantExpression implements Expression {
     public int hashCode() {
         return Objects.hashCode(constNumber);
     }
+
+    @Override
+    public Expression Differentiate(VariableExpression var) {
+        return new ConstantExpression(0.0);
+    }
+
+    @Override
+    public Expression Simplify(VariableExpression var, double value) {
+        return new ConstantExpression(this.constNumber);
+    }
+
+    public double getValue() {
+        return this.constNumber;
+    }
 }

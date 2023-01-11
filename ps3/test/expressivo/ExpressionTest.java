@@ -56,7 +56,13 @@ public class ExpressionTest {
         // }
         // catch(InterruptedException e) { }
         
-        assertEquals("5.0*x+x*y+12.0", testExpr.toString());
+        assertEquals("(((5.0*x)+(x*y))+12.0)", testExpr.toString());
+    }
+
+    @Test
+    public void testDifferentiate() {
+        Expression testExpr = Expression.parse("x*x*y");
+        assertEquals("((((1.0*x)+(x*1.0))*y)+((x*x)*0.0))", testExpr.Differentiate(new VariableExpression("x")).toString());
     }
     
 }

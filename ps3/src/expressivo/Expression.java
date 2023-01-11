@@ -86,7 +86,15 @@ public interface Expression {
     @Override
     public int hashCode();
     
-    // TODO more instance methods
+    /**
+     * @return differentitation of the expression which is also a instance of Expression 
+     */
+    public Expression Differentiate(VariableExpression var);
+
+    /**
+     * @return simplify of the expression , which is also a instance of Expression
+     */
+    public Expression Simplify(VariableExpression var, double varValue);
     
 }
 
@@ -96,6 +104,7 @@ class MakeExpression implements ExpressionListener {
     private Stack<Expression> stack = new Stack<>();
     private Stack<Integer> operatorStack = new Stack<>();
     int currentNodemutlNum = 0;
+    int currentNUm = 0;
 
     // Invariant: stack contains the Expression value of each parse
     // subtree that has been fully-walked so far, but whose parent has not yet
@@ -149,9 +158,10 @@ class MakeExpression implements ExpressionListener {
         if(ctx.NUMBER() != null) {
             Double n = Double.valueOf(ctx.NUMBER().getText());
             ConstantExpression constN = new ConstantExpression(n);
-            if(currentNodemutlNum != 0) {
+            if(currentNUm != 0) {
                 MutiplyExpression multN = new MutiplyExpression(stack.pop(), constN);
                 stack.push(multN);
+                currentNUm = currentNUm - 1;
             }
             else {
                 stack.push(constN);
@@ -159,9 +169,10 @@ class MakeExpression implements ExpressionListener {
         }
         else if(ctx.VARIABLE() != null){
             VariableExpression var = new VariableExpression(ctx.VARIABLE().getText());
-            if(currentNodemutlNum != 0) {
+            if(currentNUm != 0) {
                 MutiplyExpression multN = new MutiplyExpression(stack.pop(), var);
                 stack.push(multN);
+                currentNUm = currentNUm - 1;
             }
             else {
                 stack.push(var);
@@ -172,15 +183,18 @@ class MakeExpression implements ExpressionListener {
     @Override public void visitTerminal(TerminalNode arg0) { 
         if(arg0.getText().equals("*")) {
             currentNodemutlNum = currentNodemutlNum + 1;
+            currentNUm = currentNUm + 1;
         }
+    }
+
+    @Override public void enterOperator(OperatorContext ctx) {
+        operatorStack.push(currentNodemutlNum);
+        currentNodemutlNum = 0;
+        currentNUm = 0;
     }
 
     @Override public void enterPrimitive(PrimitiveContext ctx) { }
     @Override public void enterRoot(RootContext ctx) { }
-    @Override public void enterOperator(OperatorContext ctx) {
-        operatorStack.push(currentNodemutlNum);
-        currentNodemutlNum = 0;
-    }
     @Override public void enterEveryRule(ParserRuleContext arg0) { }
     @Override public void exitEveryRule(ParserRuleContext arg0) { }
     @Override public void visitErrorNode(ErrorNode arg0) { }
