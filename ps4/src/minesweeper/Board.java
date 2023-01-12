@@ -94,7 +94,7 @@ public class Board {
         if(!checkPositionValid(x, y) || bomb[y][x] || !boardState[y][x].equals(UNTOUCHED)) 
             return false;
         
-        boardState[y][x] = DUG;
+        boardState[y][x] = ((countBomb(x, y)==0)?DUG:String.valueOf(countBomb(x, y)));
         if(countBomb(x, y)==0) {
             List<List<Integer>> around = aroudPosition(x, y);
             for(List<Integer> point:around) {
