@@ -7,6 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Random;
 
 /**
  * a class rep the Board which x = 0 & y = 0 in top-left of the board 
@@ -34,18 +39,47 @@ public class Board {
      * a new instance
      */
 
-    
+
+    public Board(File file) throws IOException {
+
+        BufferedReader in = new BufferedReader(new FileReader(file));
+        String[] lineString = in.readLine().split(" ");
+        xSize = Integer.parseInt(lineString[0]);
+        ySize = Integer.parseInt(lineString[1]);
+        boardState = new String[ySize][xSize];
+        bomb = new boolean[ySize][xSize];
+
+        for(int i = 0; i < ySize; i++) {
+            lineString = in.readLine().split(" ");
+            for(int j = 0; j < xSize; j++) {
+                boardState[i][j] = UNTOUCHED;
+                bomb[i][j] = lineString[j].equals("1");
+            }
+        }
+
+        in.close();
+
+    }
+
     public Board(int xSize, int ySize) {
         this.xSize = xSize;
         this.ySize = ySize;
-        boardState = new String[xSize][ySize];
-        bomb = new boolean[xSize][ySize];
+        boardState = new String[ySize][xSize];
+        bomb = new boolean[ySize][xSize];
+        Random r = new Random();
+
+        for(int i = 0; i < ySize; i++) {
+            for(int j = 0; j < xSize; j++) {
+                boardState[i][j] = UNTOUCHED;
+                bomb[i][j] = ((r.nextInt()%2==0)?true:false);
+            }
+        }
     }
 
     public void checkrep() {
-        for(int x = 0; x < xSize; x++)
-            for(int y = 0; y < ySize; y++) {
-                assert (VALID_LIST.contains(boardState[x][y])); 
+        for(int i = 0; i < ySize; i++)
+            for(int j = 0; j < xSize; j++) {
+                assert (VALID_LIST.contains(boardState[i][j])); 
             }
     }
 
@@ -56,11 +90,11 @@ public class Board {
      * @param y index
      * @return return false while x, y is a bomb
      */
-    public boolean dig(int x, int y) {
-        if(!checkPositionValid(x, y) || bomb[x][y] || !boardState[x][y].equals(UNTOUCHED)) 
+    public synchronized boolean dig(int x, int y) {
+        if(!checkPositionValid(x, y) || bomb[y][x] || !boardState[y][x].equals(UNTOUCHED)) 
             return false;
         
-        boardState[x][y] = DUG;
+        boardState[y][x] = DUG;
         if(countBomb(x, y)==0) {
             List<List<Integer>> around = aroudPosition(x, y);
             for(List<Integer> point:around) {
@@ -78,11 +112,11 @@ public class Board {
      * @param x
      * @param y
      */
-    public void flag(int x, int y) {
-        if(!checkPositionValid(x, y) || boardState[x][y].equals(UNTOUCHED)) 
+    public synchronized void flag(int x, int y) {
+        if(!checkPositionValid(x, y) || boardState[y][x].equals(UNTOUCHED)) 
             return ;
 
-        boardState[x][y] = FLAG;
+        boardState[y][x] = FLAG;
         return ;
     }
 
@@ -94,11 +128,11 @@ public class Board {
      * @param x
      * @param y
      */
-    public void deflag(int x, int y) {
-        if(!checkPositionValid(x, y) || boardState[x][y].equals(FLAG)) 
+    public synchronized void deflag(int x, int y) {
+        if(!checkPositionValid(x, y) || boardState[y][x].equals(FLAG)) 
             return ;
 
-        boardState[x][y] = UNTOUCHED;
+        boardState[y][x] = UNTOUCHED;
         return;
     }
 
@@ -109,11 +143,21 @@ public class Board {
      * @param y
      * @return state of x, y 
      */
-    public String look(int x, int y) {
+    public synchronized boolean look(int x, int y) {
         if(!checkPositionValid(x, y))
-            return null;
+            return false;
         
-        return boardState[x][y];
+        return bomb[y][x];
+    }
+
+    /**
+     * change a bomb to none
+     * 
+     * @param x
+     * @param y
+     */
+    public synchronized void deBomb(int x, int y) {
+        bomb[y][x] = false;
     }
    
     /**
@@ -169,11 +213,11 @@ public class Board {
     }
     
     @Override
-    public String toString() {
+    public synchronized String toString() {
         String res = "";
-        for(int i = 0; i < xSize; i++) {
-            for(int j = 0; j < ySize; j++) {
-                if(j != ySize - 1)
+        for(int i = 0; i < ySize; i++) {
+            for(int j = 0; j < xSize; j++) {
+                if(j != xSize - 1)
                     res = res.concat(boardState[i][j] + " ");
                 else
                     res = res.concat(boardState[i][j] + "\n");
