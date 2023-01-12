@@ -57,10 +57,20 @@ public class MinesweeperServer {
 
             // handle the client
             try {
-                handleConnection(socket);
-            } catch (IOException ioe) {
-                ioe.printStackTrace(); // but don't terminate serve()
-            } finally {
+                new Thread(new Runnable() {
+                    
+                    @Override
+                    public void run() {
+                            try{
+                                handleConnection(socket);
+                            }
+                            catch(IOException ioe) {
+                                ioe.printStackTrace();
+                            }
+                    }
+                }).start();
+            }
+            finally{
                 socket.close();
             }
         }
